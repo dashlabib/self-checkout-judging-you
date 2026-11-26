@@ -44,6 +44,13 @@ def main() -> int:
     path = os.path.join(out_dir, "entry.txt")
     with open(path, "w", encoding="utf-8", newline="") as handle:
         handle.write(LINE)
+    # Read back and verify: the file must hold exactly the entry line,
+    # byte for byte, or the run fails loudly instead of passing a
+    # truncated or altered file to the gate.
+    with open(path, "rb") as handle:
+        written = handle.read()
+    if written != LINE.encode("utf-8"):
+        raise ValueError(f"{path} does not hold exactly the entry line")
     print(LINE)
     print(
         f"chars={len(LINE)} bytes={len(LINE.encode('utf-8'))} -> {path}"
